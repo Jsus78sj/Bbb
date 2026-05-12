@@ -1,0 +1,14 @@
+pyrogram==2.0.106
+tgcrypto
+redis
+hijri-converter
+pytz
+Pillow
+pydub
+SpeechRecognition
+youtube-search-python
+shazamio
+yt-dlp
+psutil
+meval
+httpx
