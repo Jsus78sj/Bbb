@@ -1,18 +1,22 @@
-import asyncio
-import sys
+import asyncio, os, glob, sys
 
-# إنشاء حلقة أحداث (ضروري لبايثون 3.14+)
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
 import config
 from config import Client
 
+# حذف أي جلسات قديمة
+for f in glob.glob("my_bot*"):
+    try:
+        os.remove(f)
+    except:
+        pass
+
 async def main():
     try:
         async with Client:
             print("✅ البوت يعمل...")
-            # الحفاظ على البوت حيًا
             while True:
                 await asyncio.sleep(3600)
     except Exception as e:
