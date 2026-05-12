@@ -1,14 +1,18 @@
+import asyncio
+import os
+
+# إنشاء حلقة أحداث جديدة للخيط الرئيسي لتجنب خطأ Pyrogram
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
 import config
 from config import Client
-import os
-import asyncio
 from aiohttp import web
 
-# معالج بسيط لأي طلب (فقط لإبقاء Render سعيدًا)
+# خادم ويب بسيط لمنع Render من إيقاف الخدمة
 async def handle(request):
     return web.Response(text="Bot is running")
 
-# تشغيل خادم الويب على المنفذ الذي يطلبه Render
 async def run_web_server():
     app = web.Application()
     app.router.add_get('/', handle)
@@ -18,20 +22,21 @@ async def run_web_server():
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
     print(f"🌐 Web server started on port {port}")
-    # حلقة لانهاية حتى لا تتوقف المهمة
+    # إبقاء المهمة حية
     while True:
         await asyncio.sleep(3600)
 
 async def main():
-    # تشغيل الخادم في مهمة خلفية
+    # تشغيل خادم الويب في الخلفية
     asyncio.create_task(run_web_server())
     
-    # تشغيل البوت (باستخدام async context manager)
+    # تشغيل بوت التليجرام
     async with Client:
         print("✅ البوت يعمل...")
-        # انتظار لا نهائي (يدويًا بدل Client.idle())
+        # إبقاء العملية نشطة
         while True:
             await asyncio.sleep(3600)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # استخدام الحلقة التي أنشأناها سابقًا
+    loop.run_until_complete(main())
